@@ -8,13 +8,17 @@ function logger(req, res, next) {
 
 async function validateUserId(req, res, next) {
   console.log("validateUserId middleware");
-  const { id } = req.params;
-  if (id) {
+  try {
+    const { id } = req.params;
     const user = await modelUsers.getById(id);
-    req.user = user;
-    next();
-  } else {
-    res.status(404).json({ message: "user not found" });
+    if (user) {
+      req.user = user;
+      next();
+    } else {
+      res.status(404).json({ message: "user not found" });
+    }
+  } catch (err) {
+    res.status(500).json({ message: "unknown error" });
   }
 }
 
@@ -30,7 +34,12 @@ function validateUser(req, res, next) {
 
 function validatePost(req, res, next) {
   console.log("validatePost middleware");
-  next();
+  const { text } = req.body;
+  if (!text || text.trim().length === 0) {
+    res.status(400).json({ message: "missing required text field" });
+  } else {
+    next();
+  }
 }
 
 function errorHandling(err, req, res, next) {
