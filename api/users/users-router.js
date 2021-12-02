@@ -47,7 +47,11 @@ router.delete("/:id", middleware.validateUserId, async (req, res) => {
   // this needs a middleware to verify user id
   const { id } = req.params;
   const result = await modelUser.remove(id);
-  res.status(200).json(result);
+  if (result) {
+    res.status(200).json(req.user);
+  } else {
+    res.status(500).json({ message: `fail to delelte user ${id}` });
+  }
 });
 
 router.get("/:id/posts", middleware.validateUserId, async (req, res) => {
