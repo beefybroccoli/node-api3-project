@@ -18,9 +18,12 @@ router.get("/:id", middleware.validateUserId, (req, res) => {
   res.status(200).json(req.user);
 });
 
-router.post("/", (req, res) => {
+router.post("/", middleware.validateUser, async (req, res) => {
   // RETURN THE NEWLY CREATED USER OBJECT
   // this needs a middleware to check that the request body is valid
+  const { name } = req.body;
+  const newUser = await modelUser.insert({ name });
+  res.status(201).json(newUser);
 });
 
 router.put("/:id", (req, res) => {
@@ -44,5 +47,7 @@ router.post("/:id/posts", (req, res) => {
   // this needs a middleware to verify user id
   // and another middleware to check that the request body is valid
 });
+
+router.use(middleware.errorHandling);
 
 module.exports = router;

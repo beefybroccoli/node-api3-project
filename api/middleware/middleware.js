@@ -20,7 +20,12 @@ async function validateUserId(req, res, next) {
 
 function validateUser(req, res, next) {
   console.log("validateUser middleware");
-  next();
+  const { name } = req.body;
+  if (!name || name.trim().length === 0) {
+    res.status(400).json({ message: "missing required name field" });
+  } else {
+    next();
+  }
 }
 
 function validatePost(req, res, next) {
@@ -28,4 +33,17 @@ function validatePost(req, res, next) {
   next();
 }
 
-module.exports = { logger, validatePost, validateUser, validateUserId };
+function errorHandling(err, req, res, next) {
+  res.status(err.satus || 500).json({
+    message: `unknown error occured: ${err.message}`,
+    stack: err.stack,
+  });
+}
+
+module.exports = {
+  logger,
+  validatePost,
+  validateUser,
+  validateUserId,
+  errorHandling,
+};
