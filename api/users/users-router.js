@@ -1,7 +1,5 @@
 const express = require("express");
 const middleware = require("../middleware/middleware");
-// You will need `users-model.js` and `posts-model.js` both
-// The middleware functions also need to be required
 const modelUser = require("./users-model");
 const modelPost = require("../posts/posts-model");
 
@@ -14,14 +12,10 @@ router.get("/", middleware.logger, async (req, res) => {
 });
 
 router.get("/:id", middleware.validateUserId, (req, res) => {
-  // RETURN THE USER OBJECT
-  // this needs a middleware to verify user id
   res.status(200).json(req.user);
 });
 
 router.post("/", middleware.validateUser, async (req, res) => {
-  // RETURN THE NEWLY CREATED USER OBJECT
-  // this needs a middleware to check that the request body is valid
   const { name } = req.body;
   const newUser = await modelUser.insert({ name });
   res.status(201).json(newUser);
@@ -32,9 +26,6 @@ router.put(
   middleware.validateUserId,
   middleware.validateUser,
   async (req, res) => {
-    // RETURN THE FRESHLY UPDATED USER OBJECT
-    // this needs a middleware to verify user id
-    // and another middleware to check that the request body is valid
     const { id } = req.params;
     const { name } = req.body;
     const modifiedUser = await modelUser.update(id, { name });
@@ -43,8 +34,6 @@ router.put(
 );
 
 router.delete("/:id", middleware.validateUserId, async (req, res) => {
-  // RETURN THE FRESHLY DELETED USER OBJECT
-  // this needs a middleware to verify user id
   const { id } = req.params;
   const result = await modelUser.remove(id);
   if (result) {
@@ -55,8 +44,6 @@ router.delete("/:id", middleware.validateUserId, async (req, res) => {
 });
 
 router.get("/:id/posts", middleware.validateUserId, async (req, res) => {
-  // RETURN THE ARRAY OF USER POSTS
-  // this needs a middleware to verify user id
   const { id } = req.params;
   const posts = await modelPost.get();
   console.log("id = ", id, ", posts.length = ", posts.length);
@@ -70,9 +57,6 @@ router.post(
   middleware.validateUserId,
   middleware.validatePost,
   async (req, res) => {
-    // RETURN THE NEWLY CREATED USER POST
-    // this needs a middleware to verify user id
-    // and another middleware to check that the request body is valid
     const { id } = req.params;
     const { text } = req.body;
     const newPost = await modelPost.insert({ user_id: id, text });
